@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block content %}
+  {% from "_formhelpers.html" import render_field %}
+  {% from "_formhelpers.html" import render_deduction_row %}
+  <form action="" method="post" name="calculate">
+      {{ form.hidden_tag() }}
+      {% if info %}
+      <p>
+        <a href="{{ url_for('table', year=info.entry.year, 
+                                     frequency=info.entry.frequency, 
+                                     status=info.entry.status)}}">
+          View Table
+        </a>
+      </p>
+      {% endif %}
+      <p>
+          <h2> Paycheck</h2>
+              {{ render_field(form.paycheck.earnings) }}
+              {% for l in form.paycheck.allowances %}
+                {{ render_field(l.num) }}
+              {% endfor %}
+            
+      </p>
+      <p>
+          <h2> Pre Tax</h2>
+          {% for entry in form.pre_deductions %}
+              {{ render_deduction_row(entry.d_name, entry.d_amount, entry.d_deferred) }}
+          {% endfor %}
+          {% if form.pre_deductions.__len__() < form.pre_deductions.max_entries %}
+              {{ form.pre_deduction_add }}
+          {% else %}
+              <p>Max Pre Deductions Reached</p>
+          {% endif %}
+          <br>
+
+      </p>
+      <p>
+          <h2> Post Tax</h2>
+          {% for entry in form.post_deductions %}
+              {{ render_deduction_row(entry.d_name, entry.d_amount, entry.d_deferred) }}
+          {% endfor %}
+          {% if form.post_deductions.__len__() < form.post_deductions.max_entries %}
+              {{ form.post_deduction_add }}
+          {% else %}
+              <p>Max Post Deductions Reached</p>
+          {% endif %}
+          <br>
+
+      </p>
+
+      <p><input type="submit" value="Calculate"></p>
+  </form>
+  {% if info %}
+     <p>User Allowances: {{ info['allowances'] }} </p>
+     <p>Total Earnings: {{ info['earnings']|to_currency }} </p>
+     <p>Pre Tax Total: {{ info.deductions.pre.all|to_currency }} </p>
+     <p>Post Tax Total: {{ info.deductions.post.all|to_currency }} </p>
+     <p>taxable_including_deferred: {{ info.calcs.wages.taxable_wages_w_d.amount|to_currency }} </p>
+     <p>Taxable excluding Deferred: {{ info.calcs.wages.taxable_wages_wo_d.amount|to_currency }} </p>
+     <p><b> Taxes! </b></p>
+     {% for key, value in info.calcs.taxes.iteritems() %}
+       <p> {{ key }} : {{ value.amount|to_currency }} </p>
+     {% endfor %}
+     <p><b> {{ info.calcs.pay.net.name }} : </b> {{ info.calcs.pay.net.amount|to_currency }}</p>
+  {% endif %}
+{% endblock %}

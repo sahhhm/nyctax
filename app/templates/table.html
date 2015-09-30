@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+  {% from "_formhelpers.html" import render_field %}
+  {% if entry %}
+  <h1> {{ entry.year.year }} - {{ entry.frequency.frequency }} </h1>
+  
+
+  <h2> Medicare and Social Security </h2>
+  <table>
+    <tr>
+      <th>Medicare Tax</th>
+      <th>Social Security Tax</th>
+      <th>Social Security Wage Limit</th>
+    </tr>
+    <tr>
+      <td>{{ entry.year.medicare.tax_rate|to_percent }} </td>      
+      <td>{{ entry.year.social_security.tax_rate|to_percent }} </td>
+      <td>{{ entry.year.social_security.wage_limit|to_currency }} </td>
+    </tr>
+  </table>
+
+  <h2> Withholdings </h2>
+  <table>
+    <tr>
+      <th>level</th>
+      <th>status</th>
+      <th>at least</th>
+      <th>but less than</th>
+      <th>subract</th>
+      <th>multiply</th>
+      <th>add</th>
+      <th></th>
+      <th>deduction allowance</th>
+      <th>exemption allowance</th>
+    </tr>
+    {% for withholding in entry.withholdings %}
+    <tr>
+      <td> {{ withholding.level.level }} </td>
+      <td> {{ withholding.status.status }} </td>
+      <td> {{ withholding.at_least|to_currency }} </td>
+      <td> {{ withholding.but_less_than|to_currency }} </td>
+      <td> {{ withholding.amount_subtract|to_currency }} </td>
+      <td> {{ withholding.amount_multiply|to_thousandth }} </td>
+      <td> {{ withholding.amount_add|to_currency }} </td>
+      <td></td>
+      <td> {{ withholding.allowance.deduction_allowance|to_currency }} </td>
+      <td> {{ withholding.allowance.exemption_allowance|to_currency }} </td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% endif%}
+{% endblock %}

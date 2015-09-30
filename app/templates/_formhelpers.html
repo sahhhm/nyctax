@@ -1,0 +1,44 @@
+{% macro render_field(field) %}
+  <dt>{{ field.label }}
+  <dd>{{ field(**kwargs)|safe }}
+  {% if field.errors %}
+    <ul class=errors>
+    {% for error in field.errors %}
+      <li>{{ error }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+  </dd>
+{% endmacro %}
+
+
+{% macro render_deduction_row(name, deduction, inclusion) %}
+  {{ name.label }}
+  {{ name(**kwargs)|safe }}
+  {% if name.errors %}
+    {% for error in name.errors %}
+      <span class=errors style="color: red;">[{{ error }}]</span>
+    {% endfor %}
+  {% endif %}
+
+  {{ deduction.label }}
+  {{ deduction(**kwargs)|safe }}
+  {% if deduction.errors %}
+
+    {% for error in deduction.errors %}
+      <span class=errors style="color: red;">[{{ error }}]</span>
+    {% endfor %}
+ 
+  {% endif %}
+
+  {{ inclusion(**kwargs)|safe }}
+  {% if inclusion.errors %}
+
+    {% for error in inclusion.errors %}
+      <span class=errors style="color: red;">[{{ error }}]</span>
+    {% endfor %}
+  {% endif %}
+  <br/>
+  
+{% endmacro %}
+

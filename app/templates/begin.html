@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+  {% from "_formhelpers.html" import render_field %}
+  <form action="" method="post" name="begin">
+      {{ form.hidden_tag() }}
+      <p>
+          <h2> Paycheck</h2>
+              {{ render_field(form.year) }}
+              {{ render_field(form.frequency) }}
+              {{ render_field(form.status) }}
+      </p>
+      <p><input type="submit" value="Begin"></p>
+  </form>
+{% endblock %}
