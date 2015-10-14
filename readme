@@ -7,9 +7,11 @@ Simple NYC tax calculated
 2. Modify config.py if necessary
 3. Activate environment
   * `. venv/bin/activate`
+4. Install required libraries
+  * `pip install -r requirements.txt`
 4. Create DB
   * `python create_db.py`
 5. Populate DB (or use admin panel once launched)
   * `python populate_db.py`
 6. Run
-   * `python run.py`
+  * `python run.py`
