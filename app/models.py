@@ -115,6 +115,9 @@ class Entry(db.Model):
         # List of dictionaries consisting of various taxes
         taxes = {}
 
+        # Individualized breakdown
+        taxes['others'] = {}
+
         # Entry containing all calculated taxes 
         taxes['all'] = {
             "name"  : "All Taxes",
@@ -123,21 +126,21 @@ class Entry(db.Model):
         
         # Social security tax - need to divide by 10000 because we are
         # multiplying by a percent
-        taxes['social'] = {
+        taxes['others']['social'] = {
             "name"  : "Social Security",
             "amount":  (self.year.social_security.tax_rate *
                         taxable_wo_deferred) / 10000
         }
-        taxes['all']['amount'] += taxes['social']['amount']
+        taxes['all']['amount'] += taxes['others']['social']['amount']
 
         # Medicare tax - need to divide by 10000 because we are multiplying by a
         # percent
-        taxes['medicare'] = {
+        taxes['others']['medicare'] = {
             "name"  : "Medicare",
             "amount": (self.year.medicare.tax_rate *
                        taxable_wo_deferred) / 10000
         }
-        taxes['all']['amount'] += taxes['medicare']['amount']
+        taxes['all']['amount'] += taxes['others']['medicare']['amount']
 
         # Withholding tax on all applicable levels. Number of allowances as
         # entered by the user is passed as dictionary where each key represents
@@ -147,13 +150,13 @@ class Entry(db.Model):
                                                      Withholding.but_less_than > taxable_w_deferred))
 
         for w in withholdings.all():
-            taxes[w.level.level] = {
+            taxes['others'][w.level.level] = {
                 "name"   : w.level.level,
                 "amount" : w.calculate_withholding(taxable_w_deferred,
                                                    allowances[w.level.id])
 
             }
-            taxes['all']['amount'] += taxes[w.level.level]['amount']
+            taxes['all']['amount'] += taxes['others'][w.level.level]['amount']
         return taxes
 
     def calculate_pay(self, wages, deductions, taxes):

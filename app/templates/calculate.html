@@ -1,67 +1,210 @@
 {% extends "base.html" %}
 
+{% block js %}
+<script>
+$(function() {
+        
+  $('.list-group-item').on('click', function() {
+    $('.glyphicon.glyphicon-chevron-right, .glyphicon.glyphicon-chevron-down', this)
+      .toggleClass('glyphicon-chevron-right glyphicon-chevron-down');
+  });
+
+  {% if info %}
+    $('div.panel-collapse')
+      .toggleClass('collapse');
+  {% endif %}
+});
+</script>
+{% endblock %}
+
+{% block styles %}
+<style>
+  .just-padding {
+  padding: 15px;
+  }
+
+  .list-group.list-group-root {
+  padding: 0;
+  overflow: hidden;
+  }
+
+  .list-group.list-group-root .list-group {
+  margin-bottom: 0;
+  }
+
+  .list-group.list-group-root .list-group-item {
+  border-radius: 0;
+  border-width: 1px 0 0 0;
+  }
+
+  .list-group.list-group-root > .list-group-item:first-child {
+  border-top-width: 0;
+  }
+
+  .list-group.list-group-root > .list-group > .list-group-item {
+  padding-left: 30px;
+  }n
+
+  .list-group.list-group-root > .list-group > .list-group > .list-group-item {
+  padding-left: 45px;
+  }
+
+  .list-group-item .glyphicon {
+  margin-right: 5px;
+  }
+</style>
+{% endblock %} 
+
 {% block content %}
   {% from "_formhelpers.html" import render_field %}
   {% from "_formhelpers.html" import render_deduction_row %}
-  <form action="" method="post" name="calculate">
+
+  <div class="container">
+  <form action="" method="post" name="calculate" class="form-horizontal">
       {{ form.hidden_tag() }}
-      {% if info %}
-      <p>
-        <a href="{{ url_for('table', year=info.entry.year, 
-                                     frequency=info.entry.frequency, 
-                                     status=info.entry.status)}}">
-          View Table
-        </a>
-      </p>
-      {% endif %}
-      <p>
-          <h2> Paycheck</h2>
-              {{ render_field(form.paycheck.earnings) }}
-              {% for l in form.paycheck.allowances %}
-                {{ render_field(l.num) }}
-              {% endfor %}
-            
-      </p>
-      <p>
-          <h2> Pre Tax</h2>
-          {% for entry in form.pre_deductions %}
-              {{ render_deduction_row(entry.d_name, entry.d_amount, entry.d_deferred) }}
-          {% endfor %}
-          {% if form.pre_deductions.__len__() < form.pre_deductions.max_entries %}
-              {{ form.pre_deduction_add }}
-          {% else %}
-              <p>Max Pre Deductions Reached</p>
-          {% endif %}
-          <br>
 
-      </p>
-      <p>
-          <h2> Post Tax</h2>
-          {% for entry in form.post_deductions %}
-              {{ render_deduction_row(entry.d_name, entry.d_amount, entry.d_deferred) }}
-          {% endfor %}
-          {% if form.post_deductions.__len__() < form.post_deductions.max_entries %}
-              {{ form.post_deduction_add }}
-          {% else %}
-              <p>Max Post Deductions Reached</p>
-          {% endif %}
-          <br>
 
-      </p>
+      <div class="panel-group" id="accordian">
 
-      <p><input type="submit" value="Calculate"></p>
+      <!-- Paycheck information -->
+      <div class="panel panel-default">
+        <div class="panel-heading" id="paycheck">
+         <h2 class="panel-title">
+           <a data-toggle="collapse" data-parent="#accordion" href="#collapsePaycheck">
+             Paycheck Information
+           </a>
+         </h2>
+        </div>
+        <div id="collapsePaycheck" class="panel-collapse">
+          <div class="panel-body">
+            <div class="row">{{ render_field(form.paycheck.earnings) }}</div>
+            {% for l in form.paycheck.allowances %}
+            <div class="row"> {{ render_field(l.num) }}</div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Pretax information -->
+      <div class="panel panel-default">
+        <div class="panel-heading" id="pretax">
+         <h2 class="panel-title">
+           <a data-toggle="collapse" data-parent="#accordion" href="#collapsePretax">
+             Pretax Deductions
+           </a>
+         </h2>
+        </div>
+        <div id="collapsePretax" class="panel-collapse">
+          <div class="panel-body">
+            {% for entry in form.pre_deductions %}
+            <div class="row"> {{ render_deduction_row(entry.d_name, entry.d_amount, entry.d_deferred) }} </div>
+            {% endfor %}
+            <div class="row">
+              <div class="col-md-12 text-center">
+              {% if form.pre_deductions.__len__() < form.pre_deductions.max_entries %}
+                {{ form.pre_deduction_add }}
+              {% else %}
+                <p>Max Pre Deductions Reached</p>
+              {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- posttax information -->
+      <div class="panel panel-default">
+        <div class="panel-heading" id="posttax">
+         <h2 class="panel-title">
+           <a data-toggle="collapse" data-parent="#accordion" href="#collapsePosttax">
+             Posttax Deductions
+           </a>
+         </h2>
+        </div>
+        <div id="collapsePosttax" class="panel-collapse">
+          <div class="panel-body">
+            {% for entry in form.post_deductions %}
+            <div class="row"> {{ render_deduction_row(entry.d_name, entry.d_amount, entry.d_deferred) }} </div>
+            {% endfor %}
+            <div class="row">
+              <div class="col-md-12 text-center">
+              {% if form.post_deductions.__len__() < form.post_deductions.max_entries %}
+                {{ form.post_deduction_add }}
+              {% else %}
+                <p>Max Post Deductions Reached</p>
+              {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel panel-default">
+        <div class="panel-heading" id="posttax">
+          <h2 class="panel-title">Results</h2>
+        </div>
+        <div class="panel-body">
+          <div class="row">
+            <div class="col-md-12 text-center">
+              <input type="submit" value="Calculate">
+            </div>
+          </div>
+
+          <!-- breakdown of pay -->
+          <div class="row">
+            {% if info %}            
+            <div class="just-padding">
+              <div class="list-group list-group-root well">
+                <!-- Earnings -->
+                <p class="list-group-item list-group-item-info">
+                  <i class="glyphicon glyphicon-minus"></i>Total Earnings <span class="pull-right">{{ info['earnings']|to_currency }}</span>
+                </p>
+
+                <!-- Withholdings -->
+                <a href="#results-withholding" class="list-group-item list-group-item-warning" data-toggle="collapse">
+                  <i class="glyphicon glyphicon-chevron-right"></i>Total Withholdings <span class="pull-right">{{ info.deductions.all|to_currency }}</span>
+                </a>
+                <div class="list-group collapse" id="results-withholding">
+                  <p class="list-group-item list-group-item-warning">
+                    <i class="glyphicon glyphicon-minus"></i>Pre Tax <span class="pull-right">{{ info.deductions.pre.all|to_currency }}</span>
+                  </p>
+                  <p class="list-group-item list-group-item-warning">
+                    <i class="glyphicon glyphicon-minus"></i>Post Tax <span class="pull-right">{{ info.deductions.post.all|to_currency }}</span>
+                  </p>
+                </div>
+  
+                <!-- Taxes -->
+                <a href="#results-taxes" class="list-group-item list-group-item-danger" data-toggle="collapse">
+                  <i class="glyphicon glyphicon-chevron-right"></i>Total Taxes <span class="pull-right">{{ info.calcs.taxes.all.amount|to_currency }}</span>
+                </a>
+                <div class="list-group collapse" id="results-taxes">
+                  {% for key, value in info.calcs.taxes.others.iteritems() %}
+                  <p class="list-group-item list-group-item-danger">
+                    <i class="glyphicon glyphicon-minus"></i>{{ key|capitalize }} <span class="pull-right">{{ value.amount|to_currency }}</span>
+                  </p>
+                  {% endfor %}
+                </div>
+
+                <!-- Net Pay -->
+                <p class="list-group-item list-group-item-success">
+                  <i class="glyphicon glyphicon-minus"></i><b>Net Pay <span class="pull-right">{{ info.calcs.pay.net.amount|to_currency }}</span></b>
+                </p>
+
+              </div>
+            </div>
+            <a href="{{ url_for('table', year=info.entry.year, 
+                                         frequency=info.entry.frequency, 
+                                         status=info.entry.status)}}">
+              View Tax Table
+            </a>
+            {% endif %}            
+
+          </div>
+        </div>
+      </div>
+  
+      </div>
   </form>
-  {% if info %}
-     <p>User Allowances: {{ info['allowances'] }} </p>
-     <p>Total Earnings: {{ info['earnings']|to_currency }} </p>
-     <p>Pre Tax Total: {{ info.deductions.pre.all|to_currency }} </p>
-     <p>Post Tax Total: {{ info.deductions.post.all|to_currency }} </p>
-     <p>taxable_including_deferred: {{ info.calcs.wages.taxable_wages_w_d.amount|to_currency }} </p>
-     <p>Taxable excluding Deferred: {{ info.calcs.wages.taxable_wages_wo_d.amount|to_currency }} </p>
-     <p><b> Taxes! </b></p>
-     {% for key, value in info.calcs.taxes.iteritems() %}
-       <p> {{ key }} : {{ value.amount|to_currency }} </p>
-     {% endfor %}
-     <p><b> {{ info.calcs.pay.net.name }} : </b> {{ info.calcs.pay.net.amount|to_currency }}</p>
-  {% endif %}
+
+  </div>
 {% endblock %}

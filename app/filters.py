@@ -3,7 +3,7 @@ import flask
 import decimal
 import locale
 
-locale.setlocale(locale.LC_ALL, "") 
+locale.setlocale(locale.LC_ALL, 'en_US.UTF-8') 
 
 blueprint = flask.Blueprint('filters', __name__)
 

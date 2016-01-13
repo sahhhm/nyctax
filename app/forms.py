@@ -33,7 +33,7 @@ class LevelForm(Form):
     def __init__(self, *args, **kwargs):
         super(LevelForm, self).__init__(*args, **kwargs)
         if '_label' in kwargs and kwargs['_label'] is not None:
-            self.num.label.text = "Number of {} poops".format(kwargs['_label'])
+            self.num.label.text = "Number of {} deductions".format(kwargs['_label'])
         if '_level_id' in kwargs and kwargs['_level_id'] is not None:
             self.level_id.data = kwargs['_level_id']
 
